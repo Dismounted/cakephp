@@ -1011,6 +1011,14 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
      */
     public function findList(Query $query, array $options)
     {
+        if (!isset($options['keyField']) && !isset($options['valueField'])) {
+            $select = $query->clause('select');
+            if ($select && count($select) <= 2) {
+                $options['keyField'] = array_shift($select);
+                $options['valueField'] = array_shift($select) ?: $options['keyField'];
+            }
+        }
+
         $options += [
             'keyField' => $this->primaryKey(),
             'valueField' => $this->displayField(),

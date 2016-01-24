@@ -1240,6 +1240,34 @@ class TableTest extends TestCase
     }
 
     /**
+     * Test that find('list') also works as it used to in 2.x.
+     *
+     * @return void
+     */
+    public function testFindListAutoSelectedFields() {
+        $table = new Table([
+            'table' => 'users',
+            'connection' => $this->connection,
+        ]);
+        $table->displayField('username');
+
+        $query = $table->find('list', ['fields' => ['id', 'created']]);
+        $expected = ['id', 'created'];
+        $this->assertSame($expected, $query->clause('select'));
+
+        $query = $table->find('list', ['fields' => ['id']]);
+        $expected = ['id'];
+        $this->assertSame($expected, $query->clause('select'));
+        $expected = [
+            1 => 1,
+            2 => 2,
+            3 => 3,
+            4 => 4
+        ];
+        $this->assertSame($expected, $query->toArray());
+    }
+
+        /**
      * test that find('list') does not auto add fields to select if using virtual properties
      *
      * @return void
@@ -1757,7 +1785,7 @@ class TableTest extends TestCase
                 'entityClass' => 'Cake\ORM\Entity',
             ]
         );
-        
+
         $authors->hasMany('Articles', ['saveStrategy' => 'replace']);
 
         $entity = $authors->newEntity([
@@ -1776,9 +1804,9 @@ class TableTest extends TestCase
         $articleId = $entity->articles[0]->id;
         unset($entity->articles[0]);
         $entity->dirty('articles', true);
-        
+
         $authors->save($entity, ['associated' => ['Articles']]);
-        
+
         $this->assertEquals($sizeArticles - 1, $authors->Articles->find('all')->where(['author_id' => $entity['id']])->count());
         $this->assertTrue($authors->Articles->exists(['id' => $articleId]));
     }
@@ -1799,7 +1827,7 @@ class TableTest extends TestCase
                 'entityClass' => 'Cake\ORM\Entity',
             ]
         );
-        
+
         $authors->hasMany('Articles', ['saveStrategy' => 'replace']);
 
         $entity = $authors->newEntity([
@@ -1816,9 +1844,9 @@ class TableTest extends TestCase
         $this->assertCount($sizeArticles, $authors->Articles->find('all')->where(['author_id' => $entity['id']]));
 
         $entity->set('articles', []);
-        
+
         $entity = $authors->save($entity, ['associated' => ['Articles']]);
-        
+
         $this->assertCount(0, $authors->Articles->find('all')->where(['author_id' => $entity['id']]));
     }
 
@@ -1853,13 +1881,13 @@ class TableTest extends TestCase
         $sizeArticles = count($entity->articles);
 
         $this->assertEquals($sizeArticles, $authors->Articles->find('all')->where(['author_id' => $entity['id']])->count());
-        
+
         $articleId = $entity->articles[0]->id;
         unset($entity->articles[0]);
         $entity->dirty('articles', true);
-        
+
         $authors->save($entity, ['associated' => ['Articles']]);
-        
+
         $this->assertEquals($sizeArticles, $authors->Articles->find('all')->where(['author_id' => $entity['id']])->count());
         $this->assertTrue($authors->Articles->exists(['id' => $articleId]));
     }
@@ -1917,9 +1945,9 @@ class TableTest extends TestCase
         $articleId = $entity->articles[0]->id;
         unset($entity->articles[0]);
         $entity->dirty('articles', true);
-        
+
         $authors->save($entity, ['associated' => ['Articles']]);
-        
+
         $this->assertEquals($sizeArticles - 1, $authors->Articles->find('all')->where(['author_id' => $entity['id']])->count());
         $this->assertFalse($authors->Articles->exists(['id' => $articleId]));
     }
@@ -1963,7 +1991,7 @@ class TableTest extends TestCase
 
         $this->assertEquals($sizeComments, $articles->Comments->find('all')->where(['article_id' => $article->id])->count());
         $this->assertTrue($articles->Comments->exists(['id' => $commentId]));
-        
+
         unset($article->comments[0]);
         $article->dirty('comments', true);
         $article = $articles->save($article, ['associated' => ['Comments']]);
@@ -2012,7 +2040,7 @@ class TableTest extends TestCase
 
         $this->assertEquals($sizeComments, $articles->Comments->find('all')->where(['article_id' => $article->id])->count());
         $this->assertTrue($articles->Comments->exists(['id' => $commentId]));
-        
+
         unset($article->comments[0]);
         $article->comments[] = $articles->Comments->newEntity([
             'user_id' => 1,
