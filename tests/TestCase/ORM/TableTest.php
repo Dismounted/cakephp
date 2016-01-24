@@ -1266,6 +1266,13 @@ class TableTest extends TestCase
             4 => 4
         ];
         $this->assertSame($expected, $query->toArray());
+
+        $query = $table->find('list', ['fields' => ['Users.id', 'Users.created']]);
+        $expected = ['Users.id', 'Users.created'];
+        $this->assertSame($expected, $query->clause('select'));
+
+        $results = $query->toArray();
+        $this->assertTextStartsWith('2007-03-17 01', array_shift($results));
     }
 
         /**
