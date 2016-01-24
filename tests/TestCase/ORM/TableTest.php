@@ -1244,7 +1244,8 @@ class TableTest extends TestCase
      *
      * @return void
      */
-    public function testFindListAutoSelectedFields() {
+    public function testFindListAutoSelectedFields()
+    {
         $table = new Table([
             'table' => 'users',
             'connection' => $this->connection,
