@@ -1275,7 +1275,7 @@ class TableTest extends TestCase
         $this->assertTextStartsWith('2007-03-17 01', array_shift($results));
     }
 
-        /**
+    /**
      * test that find('list') does not auto add fields to select if using virtual properties
      *
      * @return void
