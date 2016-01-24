@@ -1268,7 +1268,7 @@ class TableTest extends TestCase
         $this->assertSame($expected, $query->toArray());
     }
 
-        /**
+    /**
      * test that find('list') does not auto add fields to select if using virtual properties
      *
      * @return void
